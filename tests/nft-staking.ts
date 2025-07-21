@@ -56,7 +56,9 @@ describe("nft-staking", () => {
   )[0];
 
   const rewardsMint = anchor.web3.PublicKey.findProgramAddressSync(
+    // config.key().as_ref() is the same as config.toBuffer()
     [Buffer.from("rewards"), config.toBuffer()],
+
     program.programId
   )[0];
 
@@ -74,6 +76,7 @@ describe("nft-staking", () => {
     program.programId
   )[0];
 
+  // prepare nft mint and collection mint
   it("Mint Collection NFT", async () => {
     await createNft(umi, {
       mint: collectionMint,
@@ -114,6 +117,7 @@ describe("nft-staking", () => {
     });
 
     const nftMetadata = findMetadataPda(umi, { mint: nftMint.publicKey });
+    // deprecated
     await verifySizedCollectionItem(umi, {
       metadata: nftMetadata,
       collectionAuthority: creator,

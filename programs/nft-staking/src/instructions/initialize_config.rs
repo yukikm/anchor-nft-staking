@@ -15,6 +15,7 @@ pub struct InitializeConfig<'info> {
         space = 8 + StakeConfig::INIT_SPACE,
     )]
     pub config: Account<'info, StakeConfig>,
+    // rewards token mint
     #[account(
         init_if_needed,
         payer = admin,
