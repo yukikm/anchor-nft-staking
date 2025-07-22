@@ -27,6 +27,7 @@ pub struct Claim<'info> {
         bump = config.bump,
     )]
     pub config: Account<'info, StakeConfig>,
+    // User's associated token account for rewards
     #[account(
         init_if_needed,
         payer = user,
@@ -54,8 +55,10 @@ impl<'info> Claim<'info> {
 
         let cpi_context = CpiContext::new_with_signer(cpi_program, cpi_accounts, signer_seeds);
 
+        // all points are converted to rewards tokens
         mint_to(
             cpi_context,
+            // 10_u64.pow(decimals) 10**decimals
             self.user_account.points as u64 * 10_u64.pow(self.rewards_mint.decimals as u32),
         )?;
 

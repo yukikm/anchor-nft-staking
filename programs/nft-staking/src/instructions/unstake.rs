@@ -61,6 +61,9 @@ pub struct Unstake<'info> {
 
 impl<'info> Unstake<'info> {
     pub fn unstake(&mut self) -> Result<()> {
+        // 86400 seconds = 1 day
+        // Check time from when the NFT was staked
+        // time_elapsed is days
         let time_elapsed =
             ((Clock::get()?.unix_timestamp - self.stake_account.staked_at) / 86400) as u32;
 
@@ -79,6 +82,7 @@ impl<'info> Unstake<'info> {
         ];
         let signer_seeds = &[&seeds[..]];
 
+        // Thaw the delegated account to allow the user to reclaim their NFT
         let delegate = &self.stake_account.to_account_info();
         let token_account = &self.mint_ata.to_account_info();
         let edition = &self.edition.to_account_info();
@@ -89,11 +93,11 @@ impl<'info> Unstake<'info> {
         ThawDelegatedAccountCpi::new(
             metadata_program,
             ThawDelegatedAccountCpiAccounts {
-                delegate,
-                token_account,
-                edition,
-                mint,
-                token_program,
+                delegate,      // stake_account (Delegated Account)
+                token_account, // user's NFT token account
+                edition,       // NFT's Master Edition
+                mint,          // NFT's Mint
+                token_program, // SPL Token Program
             },
         )
         .invoke_signed(signer_seeds)?;
